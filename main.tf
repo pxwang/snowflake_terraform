@@ -24,7 +24,7 @@ resource "snowflake_database" "demo_db" {
   comment = "Database for Snowflake Terraform demo"
 }
 
- # Create the Snowflake Schema inside the database above
+# Create the Snowflake Schema inside the database above
 resource "snowflake_schema" "analytics_schema" {
   database = snowflake_database.demo_db.name
   name     = "ANALYTICS"
@@ -42,8 +42,8 @@ resource "snowflake_sequence" "sequence" {
 }
 
 resource "snowflake_table" "table" {
-  database = snowflake_database.demo_db.name
-  schema   = snowflake_schema.analytics_schema.name
+  database                    = snowflake_database.demo_db.name
+  schema                      = snowflake_schema.analytics_schema.name
   name                        = "TABLE_DM"
   comment                     = "A table."
   cluster_by                  = ["to_date(DATE)"]
