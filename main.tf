@@ -53,7 +53,7 @@ resource "snowflake_database_role" "analyst_role" {
 # Grant usage privileges on the warehouse
 resource "snowflake_grant_privileges_to_account_role" "wh_grant" {
   privileges        = ["USAGE"]
-  account_role_name = snowflake_role.analyst_role.name
+  account_role_name = snowflake_database_role.analyst_role.name
   on_account_object {
     object_type = "WAREHOUSE"
     object_name = snowflake_warehouse.analytics_wh.name
@@ -63,7 +63,7 @@ resource "snowflake_grant_privileges_to_account_role" "wh_grant" {
 # Grant usage privileges on the database
 resource "snowflake_grant_privileges_to_account_role" "db_grant" {
   privileges        = ["USAGE"]
-  account_role_name = snowflake_role.analyst_role.name
+  account_role_name = snowflake_database_role.analyst_role.name
   on_account_object {
     object_type = "DATABASE"
     object_name = snowflake_database.prod_db.name
@@ -73,7 +73,7 @@ resource "snowflake_grant_privileges_to_account_role" "db_grant" {
 # Grant read-only access (Usage) to the specific schema
 resource "snowflake_grant_privileges_to_account_role" "schema_grant" {
   privileges        = ["USAGE"]
-  account_role_name = snowflake_role.analyst_role.name
+  account_role_name = snowflake_database_role.analyst_role.name
   on_schema {
     schema_name = "\"${snowflake_database.prod_db.name}\".\"${snowflake_schema.sales_schema.name}\""
   }
