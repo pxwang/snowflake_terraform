@@ -23,6 +23,61 @@ provider "snowflake" {
   ]
 }
 
+# Create a compute warehouse
+resource "snowflake_warehouse" "analytics_wh" {
+  name           = "ANALYTICS_WH"
+  warehouse_size = "XSMALL"
+  auto_suspend   = 60 # Automatically shuts down after 1 minute of inactivity to save costs
+  auto_resume    = true
+}
+
+# Create a data warehouse database
+resource "snowflake_database" "prod_db" {
+  name    = "PROD_DB"
+  comment = "Production Database Managed by Terraform"
+}
+
+# Create a schema inside the database
+resource "snowflake_schema" "sales_schema" {
+  database = snowflake_database.prod_db.name
+  name     = "SALES"
+}
+
+# Create a dedicated custom role for Data Analysts
+resource "snowflake_role" "analyst_role" {
+  name    = "DATA_ANALYST_ROLE"
+  comment = "Role for business intelligence and data analysis tasks"
+}
+
+# Grant usage privileges on the warehouse
+resource "snowflake_grant_privileges_to_account_role" "wh_grant" {
+  privileges        = ["USAGE"]
+  account_role_name = snowflake_role.analyst_role.name
+  on_account_object {
+    object_type = "WAREHOUSE"
+    object_name = snowflake_warehouse.analytics_wh.name
+  }
+}
+
+# Grant usage privileges on the database
+resource "snowflake_grant_privileges_to_account_role" "db_grant" {
+  privileges        = ["USAGE"]
+  account_role_name = snowflake_role.analyst_role.name
+  on_account_object {
+    object_type = "DATABASE"
+    object_name = snowflake_database.prod_db.name
+  }
+}
+
+# Grant read-only access (Usage) to the specific schema
+resource "snowflake_grant_privileges_to_account_role" "schema_grant" {
+  privileges        = ["USAGE"]
+  account_role_name = snowflake_role.analyst_role.name
+  on_schema {
+    schema_name = "\"${snowflake_database.prod_db.name}\".\"${snowflake_schema.sales_schema.name}\""
+  }
+}
+
 resource "snowflake_database" "demo_db" {
   name    = "DEMO_DB"
   comment = "Database for Snowflake Terraform demo"
