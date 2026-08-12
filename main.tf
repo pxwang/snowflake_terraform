@@ -45,9 +45,9 @@ resource "snowflake_schema" "sales_schema" {
 
 # Create a dedicated custom role for Data Analysts
 resource "snowflake_database_role" "analyst_role" {
-  database = "PROD_DB"
-  name     = "DATA_ANALYST_ROLE"
-  comment  = "Role for business intelligence and data analysis tasks"
+  database   = "PROD_DB"
+  name       = "DATA_ANALYST_ROLE"
+  comment    = "Role for business intelligence and data analysis tasks"
   depends_on = [snowflake_database.prod_db]
 }
 
