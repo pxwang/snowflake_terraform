@@ -51,36 +51,48 @@ resource "snowflake_database_role" "analyst_role" {
   depends_on = [snowflake_database.prod_db]
 }
 
-# Grant usage privileges on the warehouse
+# Create a clean Account Role for system/compute context
+resource "snowflake_account_role" "compute_consumer" {
+  name    = "COMPUTE_CONSUMER_ROLE"
+  comment = "Account role used to bind warehouse usage to database users"
+}
+
+
+# Grant usage privileges on the warehouse to the ACCOUNT role
 resource "snowflake_grant_privileges_to_account_role" "wh_grant" {
   privileges        = ["USAGE"]
-  account_role_name = snowflake_database_role.analyst_role.name
+  account_role_name = snowflake_account_role.compute_consumer.name
+  
   on_account_object {
     object_type = "WAREHOUSE"
     object_name = snowflake_warehouse.analytics_wh.name
   }
-  depends_on = [snowflake_database_role.analyst_role]
 }
+
+# Link the Database Role to the Account Role (Role Hierarchy)
+resource "snowflake_grant_database_role" "link_roles" {
+  database_role_name = snowflake_database_role.analyst_role.fully_qualified_name
+  parent_role_name   = snowflake_account_role.compute_consumer.name
+}
+
 
 # Grant usage privileges on the database
 resource "snowflake_grant_privileges_to_account_role" "db_grant" {
   privileges        = ["USAGE"]
-  account_role_name = snowflake_database_role.analyst_role.name
+  account_role_name = snowflake_database_role.analyst_role.fully_qualified_name
   on_account_object {
     object_type = "DATABASE"
     object_name = snowflake_database.prod_db.name
   }
-  depends_on = [snowflake_database_role.analyst_role]
 }
 
 # Grant read-only access (Usage) to the specific schema
 resource "snowflake_grant_privileges_to_account_role" "schema_grant" {
   privileges        = ["USAGE"]
-  account_role_name = snowflake_database_role.analyst_role.name
+  account_role_name = snowflake_database_role.analyst_role.fully_qualified_name
   on_schema {
     schema_name = "\"${snowflake_database.prod_db.name}\".\"${snowflake_schema.sales_schema.name}\""
   }
-  depends_on = [snowflake_database_role.analyst_role]
 }
 
 resource "snowflake_database" "demo_db" {
