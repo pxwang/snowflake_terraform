@@ -48,6 +48,7 @@ resource "snowflake_database_role" "analyst_role" {
   database = "PROD_DB"
   name     = "DATA_ANALYST_ROLE"
   comment  = "Role for business intelligence and data analysis tasks"
+  depends_on = [snowflake_database.prod_db]
 }
 
 # Grant usage privileges on the warehouse
