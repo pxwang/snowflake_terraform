@@ -59,6 +59,7 @@ resource "snowflake_grant_privileges_to_account_role" "wh_grant" {
     object_type = "WAREHOUSE"
     object_name = snowflake_warehouse.analytics_wh.name
   }
+  depends_on = [snowflake_database_role.analyst_role]
 }
 
 # Grant usage privileges on the database
@@ -69,6 +70,7 @@ resource "snowflake_grant_privileges_to_account_role" "db_grant" {
     object_type = "DATABASE"
     object_name = snowflake_database.prod_db.name
   }
+  depends_on = [snowflake_database_role.analyst_role]
 }
 
 # Grant read-only access (Usage) to the specific schema
@@ -78,6 +80,7 @@ resource "snowflake_grant_privileges_to_account_role" "schema_grant" {
   on_schema {
     schema_name = "\"${snowflake_database.prod_db.name}\".\"${snowflake_schema.sales_schema.name}\""
   }
+  depends_on = [snowflake_database_role.analyst_role]
 }
 
 resource "snowflake_database" "demo_db" {
