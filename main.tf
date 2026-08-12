@@ -62,7 +62,7 @@ resource "snowflake_account_role" "compute_consumer" {
 resource "snowflake_grant_privileges_to_account_role" "wh_grant" {
   privileges        = ["USAGE"]
   account_role_name = snowflake_account_role.compute_consumer.name
-  
+
   on_account_object {
     object_type = "WAREHOUSE"
     object_name = snowflake_warehouse.analytics_wh.name
