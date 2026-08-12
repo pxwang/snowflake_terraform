@@ -19,10 +19,19 @@ ALTER USER DEMO_USER SET DEFAULT_ROLE = TF_ADMIN_ROLE;
 
 ## Terraform Variables Configuration
 
-![ Terraform Variables](images/terraform_variables.png)
+![ Terraform Variables ](images/terraform_variables.png)
+
+## Create terraform API token and configure it within GitHub 
+```yaml
+ - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+```
+
 
 ## Database, Schema, Table created from Terraform  
-![Snowflake Database, schema, Table created](images/snowflake_objects_created.png)
+![ Snowflake object ](images/snowflake_objects.png)
 
 ## CI/CD flow
 1. Change code in terraform (main.tf)
