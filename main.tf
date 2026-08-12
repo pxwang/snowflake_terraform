@@ -17,6 +17,10 @@ terraform {
 
 
 provider "snowflake" {
+  preview_features_enabled = [
+    "snowflake_sequence_resource",
+      "snowflake_table_resource"
+  ]
 }
 
 resource "snowflake_database" "demo_db" {
