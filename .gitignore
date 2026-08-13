@@ -1,5 +1,6 @@
 # Local directory for data, caching, and downloaded provider plugins
 .terraform/
+.terraform.lock.hcl
 
 
 # Ignore all variable files containing production passwords, tokens, or private keys
