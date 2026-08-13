@@ -32,10 +32,7 @@ resource "snowflake_database_role" "db_reader" {
 resource "snowflake_grant_privileges_to_database_role" "database_usage" {
   database_role_name = "\"${snowflake_database.this.name}\".\"${snowflake_database_role.db_reader.name}\""
   privileges         = ["USAGE"]
-
-  on_database {
-    database_name = snowflake_database.this.name
-  }
+  on_database = snowflake_database.this.name
 }
 
 # Step 2: Grant USAGE on all schemas inside the database to the database role
