@@ -1,3 +1,7 @@
+# Local directory for data, caching, and downloaded provider plugins
+.terraform/
+
+
 # Ignore all variable files containing production passwords, tokens, or private keys
 *.tfvars
 *.tfvars.json
