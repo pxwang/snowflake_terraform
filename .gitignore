@@ -1,0 +1,7 @@
+# Ignore all variable files containing production passwords, tokens, or private keys
+*.tfvars
+*.tfvars.json
+
+# Ignore custom deployment scripts that pass local environment variables
+*.env
+.env*
