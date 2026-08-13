@@ -136,7 +136,7 @@ resource "snowflake_table" "table" {
     type    = "VARIANT"
     comment = "extra data"
   }
-   # Enforces a hard error inside CI/CD if an operation attempts to drop this table
+  # Enforces a hard error inside CI/CD if an operation attempts to drop this table
   lifecycle {
     prevent_destroy = true
   }
