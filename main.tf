@@ -136,6 +136,10 @@ resource "snowflake_table" "table" {
     type    = "VARIANT"
     comment = "extra data"
   }
+   # Enforces a hard error inside CI/CD if an operation attempts to drop this table
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # Create a compute warehouse with modules 
@@ -150,6 +154,7 @@ module "snowflake_warehouse" {
   warehouse_size = var.environment == "prod" ? "MEDIUM" : "XSMALL"
 }
 
+# Create a data with modules 
 module "sales_database" {
   source = "./modules/databases"
 
