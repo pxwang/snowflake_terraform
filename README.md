@@ -98,7 +98,16 @@ resource "snowflake_table" "analytics_reporting" {
 
 Ensure your environment mappings align with the state rules below.
 
-![Terraform Variables](images/terraform_variables.png)
+
+| Value | Category | Actions |
+| :--- | :--- | :--- |
+| environment | dev | terraform |
+| SNOWFLAKE_ACCOUNT_NAME | your-account-name | env |
+| SNOWFLAKE_ORGANIZATION_NAME | you-org-name | env |
+| SNOWFLAKE_PASSWORD <br> *(Sensitive)* | Sensitive - write only | env |
+| SNOWFLAKE_USER | DEMO_USER | env |
+
+
 
 ---
 
@@ -155,11 +164,20 @@ jobs:
 
 ---
 
-## 6. Managed Resource Blueprint
+## 6. Snowflake examples which managed by terraform:
 
-The end-to-end mapping handles databases, schemas, sequences, and tables safely.
 
-![Snowflake object](images/snowflake_objects.png)
+**Database, schema, sequences and table are created by resource directly example**
+
+![Snowflake  Demo_DB](images/snowflake_objects.png)
+
+**Database, schemas created based on modules**
+
+![Snowfalke SALES_DB_DEV objects](images/sales_db.png)
+
+**Warehouse created by resource and modules**
+
+![Warehouse](images/warehouses.png)
 
 ### Automated CI/CD Lifecycle Flow
 1. **Develop**: Modify or extend Snowflake definitions inside your local `.tf` files.
