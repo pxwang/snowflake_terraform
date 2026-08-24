@@ -204,15 +204,15 @@ Snowflake account setup
 
 2. dbt (Data Build Tool) to handle data transformation pipelines and analytic modeling.
 ```text
-Terraform
+Raw Data
    ↓
-Snowflake account setup
-   ├── Databases
-   ├── Schemas
-   ├── Warehouses
-   ├── Roles
-   ├── Users / service accounts
-   ├── Grants
-   ├── Resource monitors
-   └── Integrations
+Snowflake RAW tables
+   ↓
+dbt
+   ├── staging models
+   ├── intermediate models
+   ├── fact tables
+   ├── dimension tables
+   ├── tests
+   └── documentation
 ```
