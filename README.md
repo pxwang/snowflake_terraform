@@ -185,3 +185,34 @@ jobs:
 3. **Trigger**: Merging code into the `main` branch automatically initiates the GitHub Actions runner.
 4. **Validate**: The pipeline evaluates canonical format checks (`terraform fmt -check`), code validation, and target plans.
 5. **Sync**: The authorized engine executes steps, updating or creating Snowflake objects synchronously.
+
+### Futhrer thoughts about Snowflake with terraform and DBT toghter.
+1. Generlly use Terraform to manage infrastructorue and permissions.
+'''Text
+Terraform
+   ↓
+Snowflake account setup
+   ├── Databases
+   ├── Schemas
+   ├── Warehouses
+   ├── Roles
+   ├── Users / service accounts
+   ├── Grants
+   ├── Resource monitors
+   └── Integrations
+   '''
+
+2. DBT for transformatioins and analystic models.
+'''Text
+Raw Data
+   ↓
+Snowflake RAW tables
+   ↓
+dbt
+   ├── staging models
+   ├── intermediate models
+   ├── fact tables
+   ├── dimension tables
+   ├── tests
+   └── documentation
+ '''  
