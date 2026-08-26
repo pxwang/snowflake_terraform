@@ -230,7 +230,7 @@ jobs:
 4. **Validate**: The pipeline evaluates canonical format checks (`terraform fmt -check`), code validation, and target plans.
 5. **Sync**: The authorized engine executes steps, updating or creating Snowflake objects synchronously.
 
-## Terraform and dbt
+## Terraform and dbt thoughts
 
 Terraform and dbt solve different parts of the Snowflake data platform lifecycle.
 
@@ -271,5 +271,6 @@ Analytics / BI
 ```
 dbt is responsible for transforming and modeling data already stored in Snowflake.
 
-Together, they provide a clean separation of responsibilities:
+Together, they provide a clean separation of responsibilities. 
 
+For reference: [dbt Projects on Snowflake](https://github.com/pxwang/getting-started-with-dbt-on-snowflake)
