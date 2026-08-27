@@ -147,7 +147,7 @@ Ensure your environment mappings align with the state rules below.
 | :--- | :--- | :--- |
 | environment | dev | terraform |
 | SNOWFLAKE_ACCOUNT_NAME | your-account-name | env |
-| SNOWFLAKE_ORGANIZATION_NAME | you-org-name | env |
+| SNOWFLAKE_ORGANIZATION_NAME | your-org-name | env |
 | SNOWFLAKE_PASSWORD <br> *(Sensitive)* | Sensitive - write only | env |
 | SNOWFLAKE_USER | DEMO_USER | env |
 
@@ -217,7 +217,7 @@ jobs:
 
 **Database, schemas created based on modules**
 
-![Snowfalke SALES_DB_DEV objects](images/sales_db.png)
+![Snowflake SALES_DB_DEV objects](images/sales_db.png)
 
 **Warehouse created by resource and modules**
 
