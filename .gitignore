@@ -10,3 +10,8 @@
 # Ignore custom deployment scripts that pass local environment variables
 *.env
 .env*
+
+# Ignore locally generated RSA key-pair material used for Snowflake key-pair auth
+*.p8
+*.pem
+rsa_key*
