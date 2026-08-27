@@ -178,7 +178,7 @@ Ensure your environment mappings align with the state rules below.
 | :--- | :--- | :--- |
 | environment | dev | terraform |
 | SNOWFLAKE_ACCOUNT_NAME | your-account-name | env |
-| SNOWFLAKE_ORGANIZATION_NAME | you-org-name | env |
+| SNOWFLAKE_ORGANIZATION_NAME | your-org-name | env |
 | SNOWFLAKE_USER | DEMO_USER | env |
 | snowflake_private_key <br> *(Sensitive)* | PEM-encoded RSA private key - write only | terraform |
 | SNOWFLAKE_PRIVATE_KEY_PASSPHRASE <br> *(Sensitive, optional)* | Passphrase for the private key, if encrypted | env |
