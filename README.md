@@ -28,7 +28,30 @@ GRANT ROLE TF_ADMIN_ROLE TO USER DEMO_USER;
 
 -- 5. Force deployment context defaults
 ALTER USER DEMO_USER SET DEFAULT_ROLE = TF_ADMIN_ROLE;
+
+-- 6. Register the public key for key-pair (JWT) authentication
+-- (see "Generate an RSA Key Pair" below for how to create rsa_key.pub)
+ALTER USER DEMO_USER SET RSA_PUBLIC_KEY='<paste contents of rsa_key.pub here, without header/footer lines>';
 ```
+
+### 1a. Generate an RSA Key Pair for Terraform Authentication
+
+Terraform authenticates to Snowflake using key-pair (JWT) auth rather than a
+password. Generate a key pair locally and keep the private key out of source
+control (already covered by `.gitignore`):
+
+```bash
+# Generate an unencrypted PKCS8 private key
+openssl genrsa 2048 | openssl pkcs8 -topk8 -inform PEM -out rsa_key.p8 -nocrypt
+
+# Derive the matching public key
+openssl rsa -in rsa_key.p8 -pubout -out rsa_key.pub
+```
+
+Register the contents of `rsa_key.pub` on the Snowflake user (step 6 above),
+then set the private key as the `SNOWFLAKE_PRIVATE_KEY` environment variable
+(or HCP Terraform workspace variable, marked sensitive) — never commit the
+`.p8` file itself.
 
 ---
 
@@ -55,6 +78,9 @@ terraform {
 }
 
 provider "snowflake" {
+  # Key-pair (RSA JWT) authentication instead of username/password.
+  authenticator = "SNOWFLAKE_JWT"
+
   # Required toggles to authorize modern stable table and sequence components
   preview_features_enabled = [
     "snowflake_sequence_resource",
@@ -104,8 +130,9 @@ Ensure your environment mappings align with the state rules below.
 | environment | dev | terraform |
 | SNOWFLAKE_ACCOUNT_NAME | your-account-name | env |
 | SNOWFLAKE_ORGANIZATION_NAME | you-org-name | env |
-| SNOWFLAKE_PASSWORD <br> *(Sensitive)* | Sensitive - write only | env |
 | SNOWFLAKE_USER | DEMO_USER | env |
+| SNOWFLAKE_PRIVATE_KEY <br> *(Sensitive)* | PEM-encoded RSA private key - write only | env |
+| SNOWFLAKE_PRIVATE_KEY_PASSPHRASE <br> *(Sensitive, optional)* | Passphrase for the private key, if encrypted | env |
 
 
 
