@@ -205,7 +205,7 @@ jobs:
 
 **Database, schemas created based on modules**
 
-![Snowfalke SALES_DB_DEV objects](images/sales_db.png)
+![Snowflake SALES_DB_DEV objects](images/sales_db.png)
 
 **Warehouse created by resource and modules**
 
@@ -218,8 +218,8 @@ jobs:
 4. **Validate**: The pipeline evaluates canonical format checks (`terraform fmt -check`), code validation, and target plans.
 5. **Sync**: The authorized engine executes steps, updating or creating Snowflake objects synchronously.
 
-### Futhrer thoughts about Snowflake with terraform and DBT toghter.
-1. Generlly Terraform to manage infrastructure provisioning and access controls.
+### Further thoughts about Snowflake with terraform and DBT together.
+1. Generally Terraform to manage infrastructure provisioning and access controls.
 ```text
 Terraform
    ↓
