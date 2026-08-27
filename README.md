@@ -49,9 +49,11 @@ openssl rsa -in rsa_key.p8 -pubout -out rsa_key.pub
 ```
 
 Register the contents of `rsa_key.pub` on the Snowflake user (step 6 above),
-then set the private key as the `SNOWFLAKE_PRIVATE_KEY` environment variable
-(or HCP Terraform workspace variable, marked sensitive) — never commit the
-`.p8` file itself.
+then set the contents of `rsa_key.p8` as the `snowflake_private_key` **Terraform
+variable** (not an Environment Variable — HCP Terraform's Environment Variable
+category rejects values containing newlines, and a PEM key is always
+multi-line) in the workspace, marked sensitive — never commit the `.p8` file
+itself.
 
 ---
 
@@ -79,7 +81,10 @@ terraform {
 
 provider "snowflake" {
   # Key-pair (RSA JWT) authentication instead of username/password.
+  # private_key is a Terraform variable (not an env var) because it's a
+  # multi-line PEM value - see "Generate an RSA Key Pair" above.
   authenticator = "SNOWFLAKE_JWT"
+  private_key   = var.snowflake_private_key
 
   # Required toggles to authorize modern stable table and sequence components
   preview_features_enabled = [
@@ -131,7 +136,7 @@ Ensure your environment mappings align with the state rules below.
 | SNOWFLAKE_ACCOUNT_NAME | your-account-name | env |
 | SNOWFLAKE_ORGANIZATION_NAME | you-org-name | env |
 | SNOWFLAKE_USER | DEMO_USER | env |
-| SNOWFLAKE_PRIVATE_KEY <br> *(Sensitive)* | PEM-encoded RSA private key - write only | env |
+| snowflake_private_key <br> *(Sensitive)* | PEM-encoded RSA private key - write only | terraform |
 | SNOWFLAKE_PRIVATE_KEY_PASSPHRASE <br> *(Sensitive, optional)* | Passphrase for the private key, if encrypted | env |
 
 
