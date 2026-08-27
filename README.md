@@ -249,7 +249,7 @@ jobs:
 
 **Database, schemas created based on modules**
 
-![Snowfalke SALES_DB_DEV objects](images/sales_db.png)
+![Snowflake SALES_DB_DEV objects](images/sales_db.png)
 
 **Warehouse created by resource and modules**
 
