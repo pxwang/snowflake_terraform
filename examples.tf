@@ -22,6 +22,8 @@ resource "snowflake_resource_monitor" "analytics_wh_monitor" {
   notify_users              = ["TERRAFORM_ADMIN"]
   suspend_trigger           = 90  # block new queries once 90% of quota is used
   suspend_immediate_trigger = 100 # cancel running queries at 100%
+
+  depends_on = [snowflake_grant_privileges_to_account_role.tf_admin_resource_monitor]
 }
 
 # Create a compute warehouse
