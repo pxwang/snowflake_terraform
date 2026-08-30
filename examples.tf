@@ -16,7 +16,7 @@
 resource "snowflake_resource_monitor" "analytics_wh_monitor" {
   name                      = "ANALYTICS_WH_MONITOR"
   credit_quota              = 100
-  frequency                 = "MONTHLY"
+  frequency                 = "DAILY"
   start_timestamp           = "IMMEDIATELY"
   notify_triggers           = [75]
   suspend_trigger           = 90  # block new queries once 90% of quota is used
