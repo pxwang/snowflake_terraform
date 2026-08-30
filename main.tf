@@ -4,24 +4,8 @@
 # See examples.tf for the hand-written illustrative resources instead.
 # ==============================================================================
 
-# Import blocks for resource monitors pre-created by ACCOUNTADMIN.
-# These run once on the next apply to bring existing Snowflake objects into
-# Terraform state. Remove them after the pipeline succeeds.
-import {
-  to = snowflake_resource_monitor.analytics_wh_monitor
-  id = "ANALYTICS_WH_MONITOR"
-}
-
-import {
-  to = module.snowflake_warehouse.snowflake_resource_monitor.this
-  id = "ANALYTICS_WH_DEV_MONITOR"
-}
-
 # Create a compute warehouse with modules
 # Variable environment as suffix example ANALYTICS_WH_DEV or ANALYTICS_WH_PROD
-# Note: resource monitors (ANALYTICS_WH_DEV_MONITOR, ANALYTICS_WH_MONITOR) must be
-# pre-created by ACCOUNTADMIN and imported into state — CREATE RESOURCE MONITOR is
-# not grantable to non-ACCOUNTADMIN roles in Snowflake.
 module "snowflake_warehouse" {
   # 1. Look up where the blueprint lives
   source = "./modules/warehouses"
@@ -30,7 +14,6 @@ module "snowflake_warehouse" {
   warehouse_name = "ANALYTICS_WH"
   environment    = var.environment
   warehouse_size = var.environment == "prod" ? "MEDIUM" : "XSMALL"
-  credit_quota   = var.environment == "prod" ? 500 : 50
 }
 
 # Create a data with modules
