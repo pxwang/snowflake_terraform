@@ -29,3 +29,14 @@ resource "snowflake_resource_monitor" "analytics_wh_env_monitor" {
   suspend_trigger           = 90
   suspend_immediate_trigger = 100
 }
+
+# Attach monitors to warehouses — also requires ACCOUNTADMIN in Snowflake.
+resource "snowflake_warehouse" "analytics_wh" {
+  name             = "ANALYTICS_WH"
+  resource_monitor = snowflake_resource_monitor.analytics_wh_monitor.name
+}
+
+resource "snowflake_warehouse" "analytics_wh_env" {
+  name             = "ANALYTICS_WH_${upper(var.environment)}"
+  resource_monitor = snowflake_resource_monitor.analytics_wh_env_monitor.name
+}
