@@ -38,19 +38,3 @@ provider "snowflake" {
     "snowflake_table_resource"
   ]
 }
-
-# Isolated provider alias for ACCOUNTADMIN-only operations (e.g. granting
-# CREATE RESOURCE MONITOR). Uses the same service account and key but elevates
-# to ACCOUNTADMIN, keeping blast radius limited to resources that explicitly
-# declare provider = snowflake.accountadmin.
-provider "snowflake" {
-  alias         = "accountadmin"
-  role          = "ACCOUNTADMIN"
-  authenticator = "SNOWFLAKE_JWT"
-  private_key   = var.snowflake_private_key
-
-  preview_features_enabled = [
-    "snowflake_sequence_resource",
-    "snowflake_table_resource"
-  ]
-}
