@@ -12,10 +12,11 @@
 
 # Create a compute warehouse
 resource "snowflake_warehouse" "analytics_wh" {
-  name           = "ANALYTICS_WH"
-  warehouse_size = "XSMALL"
-  auto_suspend   = 60 # Automatically shuts down after 1 minute of inactivity to save costs
-  auto_resume    = true
+  name             = "ANALYTICS_WH"
+  warehouse_size   = "XSMALL"
+  auto_suspend     = 60 # Automatically shuts down after 1 minute of inactivity to save costs
+  auto_resume      = true
+  resource_monitor = "ANALYTICS_WH_MONITOR"
 }
 
 # Create a data warehouse database
