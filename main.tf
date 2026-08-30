@@ -4,10 +4,17 @@
 # See examples.tf for the hand-written illustrative resources instead.
 # ==============================================================================
 
+# Grants CREATE RESOURCE MONITOR to TF_ADMIN_ROLE using the ACCOUNTADMIN alias.
+# Only this resource uses the elevated provider — all other resources stay on TF_ADMIN_ROLE.
+resource "snowflake_grant_privileges_to_account_role" "tf_admin_resource_monitor" {
+  provider          = snowflake.accountadmin
+  privileges        = ["CREATE RESOURCE MONITOR"]
+  account_role_name = "TF_ADMIN_ROLE"
+  on_account        = true
+}
+
 # Create a compute warehouse with modules
 # Variable environment as suffix example ANALYTICS_WH_DEV or ANALYTICS_WH_PROD
-# Prerequisite: ACCOUNTADMIN must run once:
-#   GRANT CREATE RESOURCE MONITOR ON ACCOUNT TO ROLE TF_ADMIN_ROLE;
 module "snowflake_warehouse" {
   # 1. Look up where the blueprint lives
   source = "./modules/warehouses"
@@ -17,6 +24,8 @@ module "snowflake_warehouse" {
   environment    = var.environment
   warehouse_size = var.environment == "prod" ? "MEDIUM" : "XSMALL"
   credit_quota   = var.environment == "prod" ? 500 : 50
+
+  depends_on = [snowflake_grant_privileges_to_account_role.tf_admin_resource_monitor]
 }
 
 # Create a data with modules
