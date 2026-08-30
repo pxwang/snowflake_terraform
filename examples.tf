@@ -19,6 +19,7 @@ resource "snowflake_resource_monitor" "analytics_wh_monitor" {
   frequency                 = "DAILY"
   start_timestamp           = "IMMEDIATELY"
   notify_triggers           = [75]
+  notify_users              = ["TERRAFORM_ADMIN"]
   suspend_trigger           = 90  # block new queries once 90% of quota is used
   suspend_immediate_trigger = 100 # cancel running queries at 100%
 }
