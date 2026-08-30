@@ -14,6 +14,7 @@ module "snowflake_warehouse" {
   warehouse_name = "ANALYTICS_WH"
   environment    = var.environment
   warehouse_size = var.environment == "prod" ? "MEDIUM" : "XSMALL"
+  credit_quota   = var.environment == "prod" ? 500 : 50
 }
 
 # Create a data with modules

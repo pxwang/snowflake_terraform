@@ -10,12 +10,26 @@
 # ./modules/warehouses and ./modules/databases instead.
 # ==============================================================================
 
+# Resource monitor to cap credit spend on the analytics warehouse.
+# auto_suspend only stops idle time - it does nothing to stop a single
+# expensive or runaway query from burning credits while it's running.
+resource "snowflake_resource_monitor" "analytics_wh_monitor" {
+  name                      = "ANALYTICS_WH_MONITOR"
+  credit_quota              = 100
+  frequency                 = "MONTHLY"
+  start_timestamp           = "IMMEDIATELY"
+  notify_triggers           = [75]
+  suspend_trigger           = 90  # block new queries once 90% of quota is used
+  suspend_immediate_trigger = 100 # cancel running queries at 100%
+}
+
 # Create a compute warehouse
 resource "snowflake_warehouse" "analytics_wh" {
-  name           = "ANALYTICS_WH"
-  warehouse_size = "XSMALL"
-  auto_suspend   = 60 # Automatically shuts down after 1 minute of inactivity to save costs
-  auto_resume    = true
+  name             = "ANALYTICS_WH"
+  warehouse_size   = "XSMALL"
+  auto_suspend     = 60 # Automatically shuts down after 1 minute of inactivity to save costs
+  auto_resume      = true
+  resource_monitor = snowflake_resource_monitor.analytics_wh_monitor.name
 }
 
 # Create a data warehouse database
