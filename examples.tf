@@ -36,18 +36,6 @@ resource "snowflake_account_role" "compute_consumer" {
   comment = "Account role used to bind warehouse usage to database users"
 }
 
-
-# Grant usage privileges on the warehouse to the ACCOUNT role
-resource "snowflake_grant_privileges_to_account_role" "wh_grant" {
-  privileges        = ["USAGE"]
-  account_role_name = snowflake_account_role.compute_consumer.name
-
-  on_account_object {
-    object_type = "WAREHOUSE"
-    object_name = "ANALYTICS_WH"
-  }
-}
-
 # Link the Database Role to the Account Role (Role Hierarchy)
 resource "snowflake_grant_database_role" "link_roles" {
   database_role_name = snowflake_database_role.analyst_role.fully_qualified_name
