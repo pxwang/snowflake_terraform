@@ -15,28 +15,43 @@ Developer
     ▼
 GitHub
     │
-    ▼
-GitHub Actions
-    │
-    ├── terraform fmt
-    ├── terraform validate
-    ├── terraform plan
-    └── terraform apply
-    │
-    ▼
-HCP Terraform
-Remote State
-    │
-    ▼
-Snowflake
-    ├── Databases
-    ├── Schemas
-    ├── Warehouses
-    ├── Roles
+    ├─────────────────────────────────────────────────────┐
+    │                                                     │
+    ▼                                                     ▼
+GitHub Actions                                  GitHub Actions
+(snowflake-terraform-demo)                      (snowflake-bootstrap)
+    │                                                     │
+    ├── terraform fmt                                     ├── terraform fmt
+    ├── terraform validate                                ├── terraform validate
+    ├── terraform plan                                    ├── terraform plan
+    └── terraform apply                                   └── terraform apply
+    │                                                     │
+    ▼                                                     ▼
+HCP Terraform                                   HCP Terraform
+Workspace: gh-actions-demo                      Workspace: gh-actions-bootstrap
+Role: TF_ADMIN_ROLE                             Role: ACCOUNTADMIN
+    │                                                     │
+    ▼                                                     ▼
+Snowflake                                       Snowflake
+    ├── Databases                                    ├── Warehouses
+    ├── Schemas                                      ├── Resource Monitors
+    ├── Roles                                        └── Warehouse Grants
     ├── Grants
     ├── Sequences
     └── Tables
 ```
+
+### Why Two Pipelines?
+
+Certain Snowflake operations require `ACCOUNTADMIN` and **cannot be granted to other roles**:
+
+| Operation | Required Role |
+| :--- | :--- |
+| `CREATE RESOURCE MONITOR` | `ACCOUNTADMIN` only — cannot be granted |
+| Attach `resource_monitor` to warehouse | `ACCOUNTADMIN` only |
+| `GRANT` on a warehouse owned by `ACCOUNTADMIN` | `ACCOUNTADMIN` only |
+
+The `snowflake-bootstrap/` project runs as `ACCOUNTADMIN` in a separate, isolated HCP Terraform workspace (`gh-actions-bootstrap`). All other day-to-day resources live in the root project running as `TF_ADMIN_ROLE`.
 
 ## Key Features
 
@@ -44,8 +59,9 @@ Snowflake
 * Reusable Terraform modules
 * Snowflake RBAC and grant management
 * Environment-dependent infrastructure configuration
-* HCP Terraform remote state
-* Automated deployment with GitHub Actions
+* HCP Terraform remote state with separate workspaces per privilege level
+* Privilege-separated bootstrap project for `ACCOUNTADMIN`-only resources
+* Automated deployment with GitHub Actions (two independent workflows)
 * CI validation with terraform fmt, validate, and plan
 * Production table protection using prevent_destroy
 * Separation of infrastructure provisioning from data transformation responsibilities
@@ -98,6 +114,25 @@ variable** (not an Environment Variable — HCP Terraform's Environment Variable
 category rejects values containing newlines, and a PEM key is always
 multi-line) in the workspace, marked sensitive — never commit the `.p8` file
 itself.
+
+### 1b. Set Up the Bootstrap Workspace (HCP Terraform)
+
+The bootstrap project uses a **separate HCP Terraform workspace** (`gh-actions-bootstrap`) so that `ACCOUNTADMIN` credentials are never shared with day-to-day Terraform runs.
+
+1. Create a new workspace named `gh-actions-bootstrap` in your HCP Terraform organization.
+2. Add the same environment variables as the main workspace:
+
+| Variable | Category | Value |
+| :--- | :--- | :--- |
+| `SNOWFLAKE_ACCOUNT_NAME` | Environment | your account name |
+| `SNOWFLAKE_ORGANIZATION_NAME` | Environment | your org name |
+| `SNOWFLAKE_USER` | Environment | Service account with `ACCOUNTADMIN` as default role |
+| `snowflake_private_key` *(Sensitive)* | Terraform | PEM-encoded RSA private key |
+
+3. Add `TF_API_TOKEN` as a GitHub Actions secret (same token works for both workspaces if they share an organization).
+4. The bootstrap workflow (`.github/workflows/snowflake-bootstrap.yml`) triggers automatically on pushes to `main` that change files under `snowflake-bootstrap/**`, or manually via `workflow_dispatch`.
+
+> **Note:** The bootstrap workspace does **not** need `SNOWFLAKE_ROLE` set — the service account's default role should already be `ACCOUNTADMIN`.
 
 ---
 
@@ -187,9 +222,16 @@ Ensure your environment mappings align with the state rules below.
 
 ---
 
-### 5. Automated CI/CD Pipeline (`.github/workflows/terraform.yml`)
+### 5. Automated CI/CD Pipelines
 
-Create a file at `.github/workflows/terraform.yml` to automate your deployments. This workflow leverages your encrypted repository secret `TF_API_TOKEN` to securely execute inside Terraform Cloud.
+This project uses **two GitHub Actions workflows**:
+
+| Workflow | File | Triggers | Workspace | Role |
+| :--- | :--- | :--- | :--- | :--- |
+| Main | `.github/workflows/snowflake-terraform-demo.yml` | Push/PR to `main` | `gh-actions-demo` | `TF_ADMIN_ROLE` |
+| Bootstrap | `.github/workflows/snowflake-bootstrap.yml` | Push to `main` touching `snowflake-bootstrap/**`, or `workflow_dispatch` | `gh-actions-bootstrap` | `ACCOUNTADMIN` |
+
+The main workflow example below leverages your encrypted repository secret `TF_API_TOKEN` to securely execute inside Terraform Cloud.
 
 ```yaml
 name: "Terraform Cloud Deployment"
