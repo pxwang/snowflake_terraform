@@ -6,32 +6,9 @@
 # definitions. They back the screenshots in README.md ("Snowflake examples
 # which managed by terraform"). They are NOT parameterized by environment.
 #
-# For real infrastructure, prefer the reusable patterns in main.tf that call
-# ./modules/warehouses and ./modules/databases instead.
+# Note: ANALYTICS_WH warehouse is managed by snowflake-bootstrap (ACCOUNTADMIN)
+# so it can have a resource monitor attached. See snowflake-bootstrap/main.tf.
 # ==============================================================================
-
-# Resource monitor to cap credit spend on the analytics warehouse.
-# auto_suspend only stops idle time - it does nothing to stop a single
-# expensive or runaway query from burning credits while it's running.
-resource "snowflake_resource_monitor" "analytics_wh_monitor" {
-  name                      = "ANALYTICS_WH_MONITOR"
-  credit_quota              = 100
-  frequency                 = "DAILY"
-  start_timestamp           = "IMMEDIATELY"
-  notify_triggers           = [75]
-  notify_users              = ["TERRAFORM_ADMIN"]
-  suspend_trigger           = 90  # block new queries once 90% of quota is used
-  suspend_immediate_trigger = 100 # cancel running queries at 100%
-}
-
-# Create a compute warehouse
-resource "snowflake_warehouse" "analytics_wh" {
-  name             = "ANALYTICS_WH"
-  warehouse_size   = "XSMALL"
-  auto_suspend     = 60 # Automatically shuts down after 1 minute of inactivity to save costs
-  auto_resume      = true
-  resource_monitor = snowflake_resource_monitor.analytics_wh_monitor.name
-}
 
 # Create a data warehouse database
 resource "snowflake_database" "prod_db" {
@@ -67,7 +44,7 @@ resource "snowflake_grant_privileges_to_account_role" "wh_grant" {
 
   on_account_object {
     object_type = "WAREHOUSE"
-    object_name = snowflake_warehouse.analytics_wh.name
+    object_name = "ANALYTICS_WH"
   }
 }
 
