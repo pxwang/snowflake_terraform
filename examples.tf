@@ -6,17 +6,9 @@
 # definitions. They back the screenshots in README.md ("Snowflake examples
 # which managed by terraform"). They are NOT parameterized by environment.
 #
-# For real infrastructure, prefer the reusable patterns in main.tf that call
-# ./modules/warehouses and ./modules/databases instead.
+# Note: ANALYTICS_WH warehouse is managed by snowflake-bootstrap (ACCOUNTADMIN)
+# so it can have a resource monitor attached. See snowflake-bootstrap/main.tf.
 # ==============================================================================
-
-# Create a compute warehouse
-resource "snowflake_warehouse" "analytics_wh" {
-  name           = "ANALYTICS_WH"
-  warehouse_size = "XSMALL"
-  auto_suspend   = 60 # Automatically shuts down after 1 minute of inactivity to save costs
-  auto_resume    = true
-}
 
 # Create a data warehouse database
 resource "snowflake_database" "prod_db" {
@@ -52,7 +44,7 @@ resource "snowflake_grant_privileges_to_account_role" "wh_grant" {
 
   on_account_object {
     object_type = "WAREHOUSE"
-    object_name = snowflake_warehouse.analytics_wh.name
+    object_name = "ANALYTICS_WH"
   }
 }
 
