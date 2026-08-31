@@ -18,9 +18,10 @@ terraform {
 }
 
 provider "snowflake" {
-  # Same provider config as the main project — role is set via
-  # SNOWFLAKE_ROLE=ACCOUNTADMIN environment variable in the HCP Terraform
-  # gh-actions-bootstrap workspace.
+  # Identical to the main project provider. Charlie1's default role is
+  # ACCOUNTADMIN so no role override is needed — the bootstrap workspace
+  # uses the same env vars as gh-actions-demo (SNOWFLAKE_ACCOUNT_NAME,
+  # SNOWFLAKE_ORGANIZATION_NAME, SNOWFLAKE_USER, snowflake_private_key).
   authenticator = "SNOWFLAKE_JWT"
   private_key   = var.snowflake_private_key
 
