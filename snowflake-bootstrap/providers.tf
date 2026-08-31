@@ -21,13 +21,12 @@ provider "snowflake" {
   # Runs as ACCOUNTADMIN — required for CREATE RESOURCE MONITOR and other
   # account-level privileges not grantable to non-ACCOUNTADMIN roles.
   # Credentials are set via HCP Terraform workspace environment variables:
-  #   SNOWFLAKE_ACCOUNT, SNOWFLAKE_USER, SNOWFLAKE_PRIVATE_KEY_PASSPHRASE (optional)
+  #   SNOWFLAKE_ACCOUNT  - Snowflake account identifier
+  #   SNOWFLAKE_USER     - Service account username
+  #   SNOWFLAKE_ROLE     - Must be set to ACCOUNTADMIN in the workspace
   # The private key is passed via var.snowflake_private_key (sensitive Terraform variable).
-  role          = "ACCOUNTADMIN"
   authenticator = "SNOWFLAKE_JWT"
   private_key   = var.snowflake_private_key
-
-  experimental_features_enabled = ["PROVIDER_CONFIGURATION_ACCOUNT_FALLBACK"]
 
   preview_features_enabled = [
     "snowflake_sequence_resource",
