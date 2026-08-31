@@ -38,6 +38,18 @@ resource "snowflake_resource_monitor" "analytics_wh_env_monitor" {
 # Warehouses (owned here so resource_monitor can be set by ACCOUNTADMIN)
 # ---------------------------------------------------------------------------
 
+# Warehouses were previously created by the main project — import them once
+# into bootstrap state so we can attach resource monitors as ACCOUNTADMIN.
+import {
+  to = snowflake_warehouse.analytics_wh
+  id = "ANALYTICS_WH"
+}
+
+import {
+  to = snowflake_warehouse.analytics_wh_env
+  id = "ANALYTICS_WH_${upper(var.environment)}"
+}
+
 resource "snowflake_warehouse" "analytics_wh" {
   name             = "ANALYTICS_WH"
   warehouse_size   = "XSMALL"
