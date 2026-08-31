@@ -25,6 +25,8 @@ provider "snowflake" {
   authenticator = "SNOWFLAKE_JWT"
   private_key   = var.snowflake_private_key
 
+  experimental_features_enabled = ["PROVIDER_CONFIGURATION_ACCOUNT_FALLBACK"]
+
   preview_features_enabled = [
     "snowflake_sequence_resource",
     "snowflake_table_resource"
